@@ -3,390 +3,232 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Chama Random Number Draw</title>
-
 <style>
-*{
-    box-sizing:border-box;
+* { box-sizing: border-box; }
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #dfe9f3);
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; margin: 0; padding: 20px;
 }
-
-body{
-    font-family:Arial, sans-serif;
-    background:linear-gradient(135deg,#f5f7fa,#dfe9f3);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
-    margin:0;
-    padding:20px;
+.card {
+    background: #fff; padding: 30px; border-radius: 16px;
+    width: 100%; max-width: 400px; text-align: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,.15);
 }
-
-.card{
-    background:#fff;
-    padding:30px;
-    border-radius:16px;
-    width:100%;
-    max-width:400px;
-    text-align:center;
-    box-shadow:0 8px 25px rgba(0,0,0,.15);
+h2 { margin-top: 0; color: #222; }
+.subtitle { color: #777; font-size: 14px; margin-bottom: 20px; }
+input {
+    width: 100%; padding: 13px; margin: 10px 0;
+    border: 1px solid #ccc; border-radius: 8px; font-size: 16px;
+    outline: none;
 }
-
-h2{
-    margin-top:0;
-    color:#222;
+input:focus { border-color: #007bff; }
+button {
+    width: 100%; padding: 13px; border: none; border-radius: 8px;
+    background: #007bff; color: white; font-size: 16px;
+    cursor: pointer; margin-top: 10px;
 }
-
-.subtitle{
-    color:#777;
-    font-size:14px;
-    margin-bottom:20px;
-}
-
-input{
-    width:100%;
-    padding:13px;
-    margin:10px 0;
-    border:1px solid #ccc;
-    border-radius:8px;
-    font-size:16px;
-    outline:none;
-}
-
-input:focus{
-    border-color:#007bff;
-}
-
-button{
-    width:100%;
-    padding:13px;
-    border:none;
-    border-radius:8px;
-    background:#007bff;
-    color:white;
-    font-size:16px;
-    cursor:pointer;
-    margin-top:10px;
-}
-
-button:hover{
-    background:#0056b3;
-}
-
-.reset-btn{
-    background:#dc3545;
-    margin-top:25px;
-}
-
-.reset-btn:hover{
-    background:#a71d2a;
-}
-
-#result{
-    margin-top:20px;
-    min-height:50px;
-}
-
-.success{
-    color:#198754;
-}
-
-.error{
-    color:#dc3545;
-    font-weight:bold;
-}
-
-.number{
-    font-size:60px;
-    font-weight:bold;
-    color:#007bff;
-    margin:10px 0;
-}
-
-.warning{
-    color:#856404;
-    background:#fff3cd;
-    padding:10px;
-    border-radius:8px;
-    margin-top:15px;
-    font-size:14px;
-}
-
-.footer{
-    margin-top:20px;
-    font-size:12px;
-    color:#999;
-}
+button:hover { background: #0056b3; }
+.reset-btn { background: #dc3545; margin-top: 25px; }
+.reset-btn:hover { background: #a71d2a; }
+#result { margin-top: 20px; min-height: 50px; }
+.success { color: #198754; }
+.error { color: #dc3545; font-weight: bold; }
+.number { font-size: 60px; font-weight: bold; color: #007bff; margin: 10px 0; }
+.warning { color: #856404; background: #fff3cd; padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 14px; }
+.footer { margin-top: 20px; font-size: 12px; color: #999; }
 </style>
 </head>
-
 <body>
-
 <div class="card">
-
     <h2>🎲 Chama Number Draw</h2>
-
-    <div class="subtitle">
-        Enter your registered name to draw your number.
-    </div>
-
-    <input
-        type="text"
-        id="name"
-        placeholder="Enter your name"
-        autocomplete="off"
-    >
-
-    <button onclick="drawNumber()">
-        🎲 Draw My Number
-    </button>
-
-    <div id="result"></div>
-
-    <button class="reset-btn" onclick="resetDraw()">
-        🔄 Reset Draw
-    </button>
-
-    <div class="footer">
-        Each member can draw only once.
-    </div>
-
+    <div class="subtitle">Enter your registered name to draw your number.</div>
+    <input type="text" id="name" placeholder="Enter your name" autocomplete="off">
+    <button id="drawButton" type="button">🎲 Draw My Number</button>
+    <div id="result" aria-live="polite"></div>
+    <button class="reset-btn" id="resetButton" type="button">🔄 Reset Draw</button>
+    <div class="footer">Each member can draw only once.</div>
 </div>
-
 <script>
+"use strict";
 
-/* =========================================
-   REGISTERED MEMBERS
-========================================= */
-
+/*
+ * IMPORTANT:
+ * This version stores assignments in this browser only (localStorage).
+ * It prevents duplicate numbers in this browser, but does not synchronize
+ * assignments between different phones/computers. Shared cross-device
+ * enforcement requires a server/database backend.
+ */
 const registeredMembers = [
-    "Elgah",
-    "Jackline",
-    "Lavenda",
-    "Evelyn",
-    "Lorine",
-    "Janey",
-    "Juliana",
-    "Pauline",
-    "Valenda",
-    "Stephy"
+    "Elgah", "Jackline", "Lavenda", "Evelyn", "Lorine",
+    "Janey", "Juliana", "Pauline", "Valenda", "Stephy"
 ];
+const allNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const STORAGE_KEY = "chamaAssignments";
+const result = document.getElementById("result");
+const nameInput = document.getElementById("name");
 
-
-/* =========================================
-   NUMBER SETTINGS
-========================================= */
-
-const allNumbers = [
-    1,2,3,4,5,6,7,8,9,10
-];
-
-
-/* =========================================
-   LOAD SAVED ASSIGNMENTS
-========================================= */
-
-let assigned = JSON.parse(
-    localStorage.getItem("chamaAssignments")
-) || {};
-
-
-/* =========================================
-   NORMALIZE NAME
-========================================= */
-
-function normalizeName(name){
+function normalizeName(name) {
     return name.trim().toLowerCase();
 }
 
+function loadAssignments() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return {};
+        const data = JSON.parse(raw);
+        if (!data || typeof data !== "object" || Array.isArray(data)) return {};
 
-/* =========================================
-   GET AVAILABLE NUMBERS
-========================================= */
+        const keys = Object.keys(data);
+        const values = keys.map(key => data[key]);
 
-function getAvailableNumbers(){
+        const validKeys = keys.every(key =>
+            registeredMembers.some(member => normalizeName(member) === key)
+        );
+        const validNumbers = values.every(number =>
+            Number.isInteger(number) && allNumbers.includes(number)
+        );
+        const uniqueNumbers = new Set(values).size === values.length;
 
-    const usedNumbers = Object.values(assigned);
-
-    return allNumbers.filter(
-        number => !usedNumbers.includes(number)
-    );
+        if (!validKeys || !validNumbers || !uniqueNumbers) return {};
+        return data;
+    } catch {
+        return {};
+    }
 }
 
+let assigned = loadAssignments();
 
-/* =========================================
-   DRAW NUMBER
-========================================= */
+function getAvailableNumbers() {
+    const usedNumbers = Object.values(assigned);
+    return allNumbers.filter(number => !usedNumbers.includes(number));
+}
 
-function drawNumber(){
+function showError(message) {
+    const div = document.createElement("div");
+    div.className = "error";
+    div.textContent = message;
+    result.replaceChildren(div);
+}
 
-    const nameInput = document.getElementById("name");
-    const result = document.getElementById("result");
-
+function drawNumber() {
+    result.replaceChildren();
     const enteredName = nameInput.value.trim();
 
-    result.innerHTML = "";
-
-    /* Empty name */
-    if(enteredName === ""){
-        result.innerHTML =
-            '<div class="error">Please enter your name.</div>';
+    if (!enteredName) {
+        showError("Please enter your name.");
         return;
     }
 
-
-    /* Check registered member */
     const registeredName = registeredMembers.find(
-        member =>
-            normalizeName(member) === normalizeName(enteredName)
+        member => normalizeName(member) === normalizeName(enteredName)
     );
 
-    if(!registeredName){
-
-        result.innerHTML =
-            '<div class="error">❌ This name is not registered.</div>';
-
+    if (!registeredName) {
+        showError("❌ This name is not registered.");
         return;
     }
 
-
-    /* Check whether member already drew */
     const memberKey = normalizeName(registeredName);
 
-    if(assigned[memberKey] !== undefined){
-
-        result.innerHTML = `
-            <div class="success">
-                You have already drawn your number.
-            </div>
-
-            <div class="number">
-                ${assigned[memberKey]}
-            </div>
-
-            <div class="warning">
-                Your number cannot be changed unless the administrator resets the draw.
-            </div>
-        `;
-
+    if (Object.prototype.hasOwnProperty.call(assigned, memberKey)) {
+        showExistingResult(registeredName, assigned[memberKey]);
         return;
     }
-
-
-    /* Check available numbers */
 
     const availableNumbers = getAvailableNumbers();
-
-    if(availableNumbers.length === 0){
-
-        result.innerHTML =
-            '<div class="error">❌ All numbers have already been assigned.</div>';
-
+    if (availableNumbers.length === 0) {
+        showError("❌ All numbers have already been assigned.");
         return;
     }
 
+    const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+    const number = availableNumbers[randomIndex];
 
-    /* Generate random number */
+    // Save first; only show a successful draw if persistence succeeds.
+    const nextAssignments = { ...assigned, [memberKey]: number };
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextAssignments));
+        assigned = nextAssignments;
+    } catch {
+        showError("Unable to save your draw in this browser. Please try again.");
+        return;
+    }
 
-    const randomIndex =
-        Math.floor(Math.random() * availableNumbers.length);
-
-    const number =
-        availableNumbers[randomIndex];
-
-
-    /* Save assignment */
-
-    assigned[memberKey] = number;
-
-    localStorage.setItem(
-        "chamaAssignments",
-        JSON.stringify(assigned)
-    );
-
-
-    /* Show result */
-
-    result.innerHTML = `
-        <div class="success">
-            Congratulations ${registeredName}! 🎉
-        </div>
-
-        <div>
-            Your number is:
-        </div>
-
-        <div class="number">
-            ${number}
-        </div>
-
-        <div class="warning">
-            This number is now reserved for you.
-        </div>
-    `;
-
+    showNewResult(registeredName, number);
     nameInput.value = "";
 }
 
+function showExistingResult(member, number) {
+    const heading = document.createElement("div");
+    heading.className = "success";
+    heading.textContent = `${member}, you have already drawn your number.`;
 
-/* =========================================
-   RESET DRAW
-========================================= */
+    const numberDiv = document.createElement("div");
+    numberDiv.className = "number";
+    numberDiv.textContent = String(number);
 
-function resetDraw(){
+    const warning = document.createElement("div");
+    warning.className = "warning";
+    warning.textContent = "Your number stays reserved for you until the administrator resets the draw.";
 
-    const pin = prompt(
-        "Enter the administrator PIN to reset all draws:"
-    );
-
-    if(pin === null){
-        return;
-    }
-
-
-    /* Check PIN */
-
-    if(pin !== "Karibu@2026"){
-
-        alert("❌ Incorrect PIN. Draw was not reset.");
-
-        return;
-    }
-
-
-    /* Confirm reset */
-
-    const confirmation = confirm(
-        "Are you sure you want to reset ALL current draws?\n\n" +
-        "All members will be able to draw again and all numbers will become available."
-    );
-
-    if(!confirmation){
-        return;
-    }
-
-
-    /* Clear assignments */
-
-    localStorage.removeItem("chamaAssignments");
-
-    assigned = {};
-
-
-    /* Clear result */
-
-    document.getElementById("result").innerHTML = `
-        <div class="success">
-            ✅ Draw has been reset successfully.
-        </div>
-    `;
-
-    alert(
-        "Draw successfully reset. All 10 members can now draw again."
-    );
+    result.replaceChildren(heading, numberDiv, warning);
 }
 
-</script>
+function showNewResult(member, number) {
+    const heading = document.createElement("div");
+    heading.className = "success";
+    heading.textContent = `Congratulations ${member}! 🎉`;
 
+    const label = document.createElement("div");
+    label.textContent = "Your number is:";
+
+    const numberDiv = document.createElement("div");
+    numberDiv.className = "number";
+    numberDiv.textContent = String(number);
+
+    const warning = document.createElement("div");
+    warning.className = "warning";
+    warning.textContent = "This number is now reserved for you until the administrator resets the draw.";
+
+    result.replaceChildren(heading, label, numberDiv, warning);
+}
+
+function resetDraw() {
+    const pin = prompt("Enter the administrator PIN to reset all draws:");
+    if (pin === null) return;
+
+    // This client-side PIN is not secure; users can inspect the page source.
+    if (pin !== "KaribuNai") {
+        alert("❌ Incorrect PIN. Draw was not reset.");
+        return;
+    }
+
+    const confirmed = confirm(
+        "Are you sure you want to reset ALL current draws?\n\nAll members will be able to draw again and all numbers will become available."
+    );
+    if (!confirmed) return;
+
+    try {
+        localStorage.removeItem(STORAGE_KEY);
+        assigned = {};
+        const message = document.createElement("div");
+        message.className = "success";
+        message.textContent = "✅ Draw has been reset successfully.";
+        result.replaceChildren(message);
+        alert("Draw successfully reset. All 10 members can now draw again.");
+    } catch {
+        alert("Unable to reset saved assignments in this browser.");
+    }
+}
+
+document.getElementById("drawButton").addEventListener("click", drawNumber);
+document.getElementById("resetButton").addEventListener("click", resetDraw);
+nameInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") drawNumber();
+});
+</script>
 </body>
 </html>
