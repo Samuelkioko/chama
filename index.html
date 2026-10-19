@@ -1,74 +1,247 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chama Random Number Draw</title>
+
 <style>
 * { box-sizing: border-box; }
+
 body {
     font-family: Arial, sans-serif;
     background: linear-gradient(135deg, #f5f7fa, #dfe9f3);
-    display: flex; justify-content: center; align-items: center;
-    min-height: 100vh; margin: 0; padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
 }
+
 .card {
-    background: #fff; padding: 30px; border-radius: 16px;
-    width: 100%; max-width: 400px; text-align: center;
+    background: #fff;
+    padding: 25px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 440px;
+    text-align: center;
     box-shadow: 0 8px 25px rgba(0,0,0,.15);
 }
+
 h2 { margin-top: 0; color: #222; }
-.subtitle { color: #777; font-size: 14px; margin-bottom: 20px; }
+
+.subtitle {
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
 input {
-    width: 100%; padding: 13px; margin: 10px 0;
-    border: 1px solid #ccc; border-radius: 8px; font-size: 16px;
+    width: 100%;
+    padding: 13px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
     outline: none;
 }
+
 input:focus { border-color: #007bff; }
+
 button {
-    width: 100%; padding: 13px; border: none; border-radius: 8px;
-    background: #007bff; color: white; font-size: 16px;
-    cursor: pointer; margin-top: 10px;
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    background: #007bff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
 }
+
 button:hover { background: #0056b3; }
-.reset-btn { background: #dc3545; margin-top: 25px; }
+
+.reset-btn {
+    background: #dc3545;
+    margin-top: 25px;
+}
+
 .reset-btn:hover { background: #a71d2a; }
-#result { margin-top: 20px; min-height: 50px; }
+
+#result {
+    margin-top: 20px;
+    min-height: 30px;
+}
+
 .success { color: #198754; }
-.error { color: #dc3545; font-weight: bold; }
-.number { font-size: 60px; font-weight: bold; color: #007bff; margin: 10px 0; }
-.warning { color: #856404; background: #fff3cd; padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 14px; }
-.footer { margin-top: 20px; font-size: 12px; color: #999; }
+
+.error {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.number {
+    font-size: 60px;
+    font-weight: bold;
+    color: #007bff;
+    margin: 10px 0;
+}
+
+.warning {
+    color: #856404;
+    background: #fff3cd;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+/* Drawn numbers list */
+.draw-list {
+    margin-top: 22px;
+    text-align: left;
+    border: 1px solid #e2e6ea;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.draw-list-header {
+    background: #007bff;
+    color: white;
+    padding: 14px;
+}
+
+.draw-list-header h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+}
+
+.draw-count {
+    font-size: 13px;
+    opacity: .95;
+}
+
+.draw-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-bottom: 1px solid #eee;
+}
+
+.draw-row:last-child { border-bottom: none; }
+
+.draw-number {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    border-radius: 50%;
+    background: #e8f1ff;
+    color: #007bff;
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.draw-member {
+    flex: 1;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    overflow-wrap: anywhere;
+}
+
+.draw-status {
+    font-size: 11px;
+    color: #198754;
+    background: #e6f5ec;
+    padding: 5px 7px;
+    border-radius: 12px;
+}
+
+.empty-list {
+    padding: 18px 12px;
+    text-align: center;
+    color: #888;
+    font-size: 13px;
+}
+
+.footer {
+    margin-top: 20px;
+    font-size: 12px;
+    color: #999;
+}
 </style>
 </head>
+
 <body>
 <div class="card">
+
     <h2>🎲 Chama Number Draw</h2>
-    <div class="subtitle">Enter your registered name to draw your number.</div>
-    <input type="text" id="name" placeholder="Enter your name" autocomplete="off">
-    <button id="drawButton" type="button">🎲 Draw My Number</button>
+
+    <div class="subtitle">
+        Enter your registered name to draw your number.
+    </div>
+
+    <input
+        type="text"
+        id="name"
+        placeholder="Enter your name"
+        autocomplete="off"
+    >
+
+    <button id="drawButton" type="button">
+        🎲 Draw My Number
+    </button>
+
+    <!-- Draw result -->
     <div id="result" aria-live="polite"></div>
-    <button class="reset-btn" id="resetButton" type="button">🔄 Reset Draw</button>
-    <div class="footer">Each member can draw only once.</div>
+
+    <!-- Live list of assigned numbers -->
+    <div class="draw-list">
+        <div class="draw-list-header">
+            <h3>📋 Draw Results</h3>
+            <div class="draw-count" id="drawCount">0 of 10 numbers drawn</div>
+        </div>
+
+        <div id="drawList">
+            <div class="empty-list">
+                No numbers have been drawn yet.
+            </div>
+        </div>
+    </div>
+
+    <button class="reset-btn" id="resetButton" type="button">
+        🔄 Reset Draw
+    </button>
+
+    <div class="footer">
+        Each member can draw only once.
+    </div>
+
 </div>
+
 <script>
 "use strict";
 
-/*
- * IMPORTANT:
- * This version stores assignments in this browser only (localStorage).
- * It prevents duplicate numbers in this browser, but does not synchronize
- * assignments between different phones/computers. Shared cross-device
- * enforcement requires a server/database backend.
- */
 const registeredMembers = [
     "Elgah", "Jackline", "Lavenda", "Evelyn", "Lorine",
     "Janey", "Juliana", "Pauline", "Valenda", "Stephy"
 ];
+
 const allNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
 const STORAGE_KEY = "chamaAssignments";
+
 const result = document.getElementById("result");
 const nameInput = document.getElementById("name");
+const drawList = document.getElementById("drawList");
+const drawCount = document.getElementById("drawCount");
 
 function normalizeName(name) {
     return name.trim().toLowerCase();
@@ -77,22 +250,39 @@ function normalizeName(name) {
 function loadAssignments() {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
+
         if (!raw) return {};
+
         const data = JSON.parse(raw);
-        if (!data || typeof data !== "object" || Array.isArray(data)) return {};
+
+        if (!data || typeof data !== "object" || Array.isArray(data)) {
+            return {};
+        }
 
         const keys = Object.keys(data);
-        const values = keys.map(key => data[key]);
+        const values = Object.values(data);
 
         const validKeys = keys.every(key =>
-            registeredMembers.some(member => normalizeName(member) === key)
+            registeredMembers.some(
+                member => normalizeName(member) === key
+            )
         );
+
         const validNumbers = values.every(number =>
             Number.isInteger(number) && allNumbers.includes(number)
         );
+
         const uniqueNumbers = new Set(values).size === values.length;
 
-        if (!validKeys || !validNumbers || !uniqueNumbers) return {};
+        if (
+            !validKeys ||
+            !validNumbers ||
+            !uniqueNumbers ||
+            keys.length > registeredMembers.length
+        ) {
+            return {};
+        }
+
         return data;
     } catch {
         return {};
@@ -103,7 +293,10 @@ let assigned = loadAssignments();
 
 function getAvailableNumbers() {
     const usedNumbers = Object.values(assigned);
-    return allNumbers.filter(number => !usedNumbers.includes(number));
+
+    return allNumbers.filter(number =>
+        !usedNumbers.includes(number)
+    );
 }
 
 function showError(message) {
@@ -113,8 +306,54 @@ function showError(message) {
     result.replaceChildren(div);
 }
 
+function updateDrawList() {
+    drawList.replaceChildren();
+
+    const entries = Object.entries(assigned)
+        .map(([memberKey, number]) => ({
+            member: registeredMembers.find(
+                name => normalizeName(name) === memberKey
+            ),
+            number
+        }))
+        .filter(entry => entry.member)
+        .sort((a, b) => a.number - b.number);
+
+    drawCount.textContent =
+        `${entries.length} of ${allNumbers.length} numbers drawn`;
+
+    if (entries.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-list";
+        empty.textContent = "No numbers have been drawn yet.";
+        drawList.appendChild(empty);
+        return;
+    }
+
+    entries.forEach(entry => {
+        const row = document.createElement("div");
+        row.className = "draw-row";
+
+        const number = document.createElement("div");
+        number.className = "draw-number";
+        number.textContent = entry.number;
+
+        const member = document.createElement("div");
+        member.className = "draw-member";
+        member.textContent = entry.member;
+
+        const status = document.createElement("span");
+        status.className = "draw-status";
+        status.textContent = "Assigned";
+
+        row.append(number, member, status);
+        drawList.appendChild(row);
+    });
+}
+
 function drawNumber() {
     result.replaceChildren();
+
     const enteredName = nameInput.value.trim();
 
     if (!enteredName) {
@@ -139,32 +378,45 @@ function drawNumber() {
     }
 
     const availableNumbers = getAvailableNumbers();
+
     if (availableNumbers.length === 0) {
         showError("❌ All numbers have already been assigned.");
         return;
     }
 
-    const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+    const randomIndex = Math.floor(
+        Math.random() * availableNumbers.length
+    );
+
     const number = availableNumbers[randomIndex];
 
-    // Save first; only show a successful draw if persistence succeeds.
-    const nextAssignments = { ...assigned, [memberKey]: number };
+    const nextAssignments = {
+        ...assigned,
+        [memberKey]: number
+    };
+
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextAssignments));
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(nextAssignments)
+        );
+
         assigned = nextAssignments;
     } catch {
-        showError("Unable to save your draw in this browser. Please try again.");
+        showError("Unable to save your draw. Please try again.");
         return;
     }
 
     showNewResult(registeredName, number);
+    updateDrawList();
     nameInput.value = "";
 }
 
 function showExistingResult(member, number) {
     const heading = document.createElement("div");
     heading.className = "success";
-    heading.textContent = `${member}, you have already drawn your number.`;
+    heading.textContent =
+        `${member}, you have already drawn your number.`;
 
     const numberDiv = document.createElement("div");
     numberDiv.className = "number";
@@ -172,7 +424,8 @@ function showExistingResult(member, number) {
 
     const warning = document.createElement("div");
     warning.className = "warning";
-    warning.textContent = "Your number stays reserved for you until the administrator resets the draw.";
+    warning.textContent =
+        "Your number is reserved for you until the administrator resets the draw.";
 
     result.replaceChildren(heading, numberDiv, warning);
 }
@@ -191,44 +444,64 @@ function showNewResult(member, number) {
 
     const warning = document.createElement("div");
     warning.className = "warning";
-    warning.textContent = "This number is now reserved for you until the administrator resets the draw.";
+    warning.textContent =
+        "This number is now reserved for you until the administrator resets the draw.";
 
     result.replaceChildren(heading, label, numberDiv, warning);
 }
 
 function resetDraw() {
-    const pin = prompt("Enter the administrator PIN to reset all draws:");
+    const pin = prompt(
+        "Enter the administrator PIN to reset all draws:"
+    );
+
     if (pin === null) return;
 
-    // This client-side PIN is not secure; users can inspect the page source.
     if (pin !== "KaribuNai") {
         alert("❌ Incorrect PIN. Draw was not reset.");
         return;
     }
 
     const confirmed = confirm(
-        "Are you sure you want to reset ALL current draws?\n\nAll members will be able to draw again and all numbers will become available."
+        "Are you sure you want to reset ALL current draws?\n\n" +
+        "All members will be able to draw again and all numbers " +
+        "will become available."
     );
+
     if (!confirmed) return;
 
     try {
         localStorage.removeItem(STORAGE_KEY);
         assigned = {};
+
         const message = document.createElement("div");
         message.className = "success";
         message.textContent = "✅ Draw has been reset successfully.";
+
         result.replaceChildren(message);
+
+        updateDrawList();
+        nameInput.value = "";
+
         alert("Draw successfully reset. All 10 members can now draw again.");
     } catch {
         alert("Unable to reset saved assignments in this browser.");
     }
 }
 
-document.getElementById("drawButton").addEventListener("click", drawNumber);
-document.getElementById("resetButton").addEventListener("click", resetDraw);
+document.getElementById("drawButton")
+    .addEventListener("click", drawNumber);
+
+document.getElementById("resetButton")
+    .addEventListener("click", resetDraw);
+
 nameInput.addEventListener("keydown", event => {
     if (event.key === "Enter") drawNumber();
 });
+
+// Display saved results when the page opens or refreshes.
+updateDrawList();
 </script>
 </body>
 </html>
+```
